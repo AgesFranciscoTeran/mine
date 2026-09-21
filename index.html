@@ -1,0 +1,316 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quimeras P450 · explorador</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:light dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f4ef; --surface:#fffefb; --ink:#191714; --ink-2:#55504a; --ink-3:#8a837a;
+  --rule:#ded8cd; --grid:#ece7dd;
+  --p1:#3f6f8f; --p2:#c2703a; --p3:#5f7a4a; --gen:#8a5a9c;
+  --good:#3f6f8f; --bad:#a4453a;
+  --btn:#191714; --btn-ink:#fffefb;
+  --display:"Fraunces",Georgia,serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14130f; --surface:#1d1b16; --ink:#f2efe8; --ink-2:#bdb6aa; --ink-3:#8d867a;
+  --rule:#333028; --grid:#26241e;
+  --p1:#6fa5c6; --p2:#e0915c; --p3:#8aa872; --gen:#b98ccb;
+  --good:#6fa5c6; --bad:#d2705f;
+  --btn:#f2efe8; --btn-ink:#14130f;}}
+:root[data-theme="dark"]{
+  --bg:#14130f; --surface:#1d1b16; --ink:#f2efe8; --ink-2:#bdb6aa; --ink-3:#8d867a;
+  --rule:#333028; --grid:#26241e;
+  --p1:#6fa5c6; --p2:#e0915c; --p3:#8aa872; --gen:#b98ccb;
+  --good:#6fa5c6; --bad:#d2705f;
+  --btn:#f2efe8; --btn-ink:#14130f;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:900px;margin-inline:auto;padding:36px 20px 70px;display:flex;flex-direction:column;gap:30px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,5vw,42px);line-height:1.06;margin:8px 0 12px;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:0}
+.lede{max-width:62ch;color:var(--ink-2);margin:0}
+.sub{color:var(--ink-2);margin:3px 0 0;max-width:66ch;font-size:14px}
+section{display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:11px;padding:18px}
+.banner{border-left:3px solid var(--p2);background:color-mix(in srgb,var(--p2) 9%,transparent);padding:12px 15px;border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink-2)}
+.banner strong{color:var(--ink)}
+svg{display:block;max-width:100%}
+svg text{font-family:var(--mono);font-size:11px;fill:var(--ink-2)}
+.blocks{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-top:4px}
+.bk{display:flex;flex-direction:column;gap:5px;min-width:0}
+.bk .bl{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);text-align:center}
+.bk button{font:600 13px var(--mono);border:1px solid var(--rule);border-radius:6px;padding:9px 0;cursor:pointer;
+  background:var(--surface);color:var(--ink);width:100%}
+.bk button[data-on="1"]{background:var(--p1);border-color:var(--p1);color:#fff}
+.bk button[data-on="2"]{background:var(--p2);border-color:var(--p2);color:#fff}
+.bk button[data-on="3"]{background:var(--p3);border-color:var(--p3);color:#fff}
+.ctl{display:flex;flex-direction:column;gap:5px;min-width:190px;flex:1}
+.ctl label{display:flex;justify-content:space-between;gap:10px;font-weight:500;font-size:13.5px}
+.ctl output{font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.ctl .ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3)}
+input[type=range]{width:100%;accent-color:var(--gen);margin:0;height:20px}
+.mini{display:inline-flex;gap:1.5px}
+.mini i{width:8px;height:15px;border-radius:2px;display:inline-block}
+.empty{color:var(--ink-3);font-size:13.5px;padding:10px 2px}
+.bk button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+button.act{font:500 14px var(--body);border-radius:7px;padding:10px 15px;cursor:pointer;border:1px solid var(--btn);background:var(--btn);color:var(--btn-ink)}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+button.act:hover{opacity:.87}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;border-top:1px solid var(--rule);margin-top:16px;padding-top:14px}
+.readout div{min-width:0}
+.readout dt{font-size:11.5px;color:var(--ink-3);margin-bottom:2px}
+.readout dd{margin:0;font-family:var(--display);font-weight:700;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.readout dd small{font-family:var(--body);font-weight:400;font-size:12px;color:var(--ink-3)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{text-align:left;font:600 11.5px var(--body);color:var(--ink-3);padding:5px 8px;border-bottom:1px solid var(--rule)}
+td{padding:5px 8px;border-bottom:1px solid var(--grid);font-family:var(--mono);font-size:12.5px}
+tr.pick{cursor:pointer}
+tr.pick:hover td{background:var(--grid)}
+.bar{height:7px;border-radius:4px;background:var(--p1);display:block}
+.foot{border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:var(--ink-2);display:grid;gap:9px}
+.foot code{font-family:var(--mono);font-size:12px;color:var(--ink)}
+@media (max-width:640px){
+  .blocks{grid-template-columns:repeat(4,1fr)}
+  .readout{grid-template-columns:1fr;gap:10px}
+  .readout dd{font-size:25px}
+}
+</style></head><body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Librería SCHEMA de citocromos P450 · 3⁸ = 6 561 quimeras</p>
+    <h1>Arma una quimera y deja que el modelo proponga otras</h1>
+    <p class="lede">Tres P450 parentales cortados en ocho bloques. Cada bloque puede venir de cualquiera de los tres, así que hay 6 561 proteínas posibles y el espacio completo está enumerado. Elige de dónde viene cada bloque y el modelo sale a explorar desde ahí: las combinaciones que propone no salen de una lista, salen de una cadena de Markov que corre en el momento.</p>
+  </header>
+
+  <div class="banner" id="srcBanner">
+    <strong>Qué modelo es este, con nombre y apellido.</strong> No es un VAE: un VAE hay que entrenarlo sobre un alineamiento de homólogos naturales y ese entrenamiento todavía no existe. Lo que corre aquí es un modelo energético tipo SCHEMA, que penaliza los contactos que cada cruce rompe entre bloques de parentales distintos, más muestreo de Metropolis para generar. El cálculo es real y las propuestas son nuevas de verdad. Los puntos de corte y la matriz de contactos son de ejemplo, no los del artículo original.
+  </div>
+
+  <section>
+    <div>
+      <h2>La quimera</h2>
+      <p class="sub">Toca un bloque para cambiar de parental. Las tijeras marcan los cruces.</p>
+    </div>
+    <div class="panel">
+      <div class="legend">
+        <span><i class="dot" style="background:var(--p1)"></i>CYP102A1</span>
+        <span><i class="dot" style="background:var(--p2)"></i>CYP102A2</span>
+        <span><i class="dot" style="background:var(--p3)"></i>CYP102A3</span>
+      </div>
+      <div id="chain"></div>
+      <div class="blocks" id="picker"></div>
+      <dl class="readout">
+        <div><dt>Plausibilidad</dt><dd id="rScore">–</dd></div>
+        <div><dt>Puesto entre 6 561</dt><dd id="rRank">–</dd></div>
+        <div><dt>Cruces</dt><dd id="rCross">–</dd></div>
+      </dl>
+      <div class="row" style="margin-top:14px">
+        <button class="act ghost" id="rnd" type="button">Al azar</button>
+        <button class="act ghost" id="best" type="button">La mejor de todas</button>
+        <button class="act ghost" id="reset" type="button">Volver al parental 1</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div>
+      <h2>Lo que el modelo propone</h2>
+      <p class="sub">Parte de tu quimera, propone cambiar un bloque a la vez y acepta o rechaza según cuánto empeora la energía. Sube la temperatura y se atreve más.</p>
+    </div>
+    <div class="panel">
+      <div class="row" style="align-items:end;gap:20px">
+        <div class="ctl">
+          <label for="temp">Temperatura <output id="tOut" for="temp"></output></label>
+          <input id="temp" type="range" min="0.15" max="4" step="0.05" value="1">
+          <div class="ends"><span>conservador</span><span>atrevido</span></div>
+        </div>
+        <button class="act" id="gen" type="button">Generar 8 variantes</button>
+      </div>
+      <div id="genOut" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <section>
+    <div>
+      <h2>El paisaje completo</h2>
+      <p class="sub">Las 6 561 quimeras: a la derecha las que más se alejan de un parental puro, arriba las más plausibles. La tuya en negro, las generadas en morado.</p>
+    </div>
+    <div class="panel"><div id="map"></div></div>
+  </section>
+
+  <div class="foot">
+    <p><strong>Cómo llegar al VAE de verdad, sin backend.</strong> GitHub Pages no ejecuta código, pero no hace falta que lo haga. Entrenas el VAE sobre el alineamiento de homólogos en tu GPU, lo exportas a ONNX y lo cargas en el navegador con onnxruntime-web desde un CDN. Un modelo a nivel de familia pesa unos pocos megas y corre entero en el cliente. La página sigue siendo estática y este generador se reemplaza por muestreo del espacio latente.</p>
+    <p><strong>Qué es y qué no es un puntaje.</strong> Ni esta energía ni una pseudo-verosimilitud son la probabilidad de que la proteína se pliegue o tenga actividad. Miden qué tan compatible es la combinación con lo que el modelo sabe. Para lo otro hacen falta mediciones, y ahí es donde el mesón entra al proyecto.</p>
+    <p><strong>Publicar.</strong> Un repo, este archivo como <code>index.html</code> en la raíz, y en Settings → Pages elegir la rama <code>main</code> y la carpeta <code>/</code>. Queda en <code>usuario.github.io/repo</code> en un par de minutos. No hay build ni dependencias.</p>
+  </div>
+</main>
+
+<script>
+(function(){
+"use strict";
+var NB=8, NP=3, TOT=6561;
+var PAR=["CYP102A1","CYP102A2","CYP102A3"], COL=["--p1","--p2","--p3"];
+/* posiciones de ejemplo sobre el dominio hemo (~463 residuos) */
+var CUT=[1,58,122,166,216,268,328,404,464];
+var pick=[0,0,0,0,0,0,0,0], temp=1, gens=[];
+var scores=null, order=null, rank=null, real=false, ESCALE=1;
+
+/* ---------- modelo provisional tipo SCHEMA ---------- */
+function mulberry(seed){var a=seed>>>0; return function(){a=(a+0x6D2B79F5)>>>0;var t=a;
+  t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296;};}
+var C=[],ADD=[];
+(function(){var r=mulberry(20260919),i,j,k;
+  for(i=0;i<NB;i++){C.push([]); for(j=0;j<NB;j++) C[i].push(0);}
+  for(i=0;i<NB;i++) for(j=i+1;j<NB;j++){
+    var d=j-i, base=3.0/(d*d), v=base*(0.45+1.1*r());        /* contactos: caen con la distancia */
+    C[i][j]=C[j][i]=v;}
+  for(i=0;i<NB;i++){ADD.push([]); for(k=0;k<NP;k++) ADD[i].push((r()-0.5)*16.0);}
+})();
+function energy(v){var e=0,i,j;
+  for(i=0;i<NB;i++){e-=ADD[i][v[i]];
+    for(j=i+1;j<NB;j++) if(v[i]!==v[j]) e+=C[i][j];}
+  return e;}
+function idxOf(v){var n=0,i; for(i=0;i<NB;i++) n=n*3+v[i]; return n;}
+function vecOf(n){var v=[],i; for(i=NB-1;i>=0;i--){v[i]=n%3;n=(n-v[i])/3;} return v;}
+
+function computeAll(){
+  var raw=new Float64Array(TOT),n;
+  if(real){ for(n=0;n<TOT;n++) raw[n]=scores[n]; }
+  else { for(n=0;n<TOT;n++) raw[n]=-energy(vecOf(n)); }
+  var lo=Infinity,hi=-Infinity,mn=0,sd=0;
+  for(n=0;n<TOT;n++){ if(raw[n]<lo)lo=raw[n]; if(raw[n]>hi)hi=raw[n]; mn+=raw[n]; }
+  mn/=TOT; for(n=0;n<TOT;n++) sd+=(raw[n]-mn)*(raw[n]-mn);
+  ESCALE=Math.sqrt(sd/TOT)||1;
+  scores=new Float64Array(TOT);
+  for(n=0;n<TOT;n++) scores[n]=(raw[n]-lo)/(hi-lo||1);
+  order=Array.from({length:TOT},function(_,i){return i;})
+    .sort(function(a,b){return scores[b]-scores[a];});
+  rank=new Int32Array(TOT);
+  order.forEach(function(id,i){rank[id]=i+1;});
+}
+
+/* ---------- generador: Metropolis sobre los bloques ---------- */
+function dist(v){var c=[0,0,0],i; for(i=0;i<NB;i++) c[v[i]]++; return NB-Math.max(c[0],c[1],c[2]);}
+function crosses(v){var n=0,i; for(i=1;i<NB;i++) if(v[i]!==v[i-1]) n++; return n;}
+function generate(k){
+  var cur=pick.slice(), eCur=energy(cur), seen={}, out=[], steps=0;
+  seen[idxOf(pick)]=1;
+  while(out.length<k && steps<8000){
+    steps++;
+    var b=Math.floor(Math.random()*NB), p=Math.floor(Math.random()*NP);
+    if(p===cur[b]) continue;
+    var cand=cur.slice(); cand[b]=p;
+    var eNew=energy(cand), dE=(eNew-eCur)/ESCALE;
+    if(dE<=0 || Math.random()<Math.exp(-dE/temp)){
+      cur=cand; eCur=eNew;
+      var id=idxOf(cur);
+      if(!seen[id]){ seen[id]=1; out.push({id:id,v:cur.slice(),sc:scores[id]}); }
+    }
+  }
+  return out;
+}
+function mini(v){var h='<span class="mini">',i;
+  for(i=0;i<NB;i++) h+='<i style="background:var('+COL[v[i]]+')"></i>';
+  return h+'</span>';}
+
+/* ---------- la cadena ---------- */
+function drawChain(){
+  var host=document.getElementById("chain"),W=Math.max(280,host.clientWidth),H=64,L=CUT[NB]-CUT[0],s="";
+  for(var i=0;i<NB;i++){
+    var x0=(CUT[i]-CUT[0])/L*W, x1=(CUT[i+1]-CUT[0])/L*W, w=Math.max(3,x1-x0-2);
+    s+='<rect x="'+x0+'" y="16" width="'+w+'" height="27" rx="4" fill="var('+COL[pick[i]]+')"/>';
+    if(w>13) s+='<text x="'+(x0+w/2)+'" y="34" text-anchor="middle" style="font-size:11px;fill:#fff">'+(i+1)+'</text>';
+    if(i>0&&pick[i]!==pick[i-1]){
+      s+='<line x1="'+x0+'" x2="'+x0+'" y1="9" y2="50" stroke="var(--ink)" stroke-width="1.7"/>';
+      s+='<text x="'+x0+'" y="7" text-anchor="middle" style="font-size:10px">&#9986;</text>';}
+    s+='<text x="'+(x0+w/2)+'" y="59" text-anchor="middle" style="font-size:9.5px">'+CUT[i]+'</text>';
+  }
+  host.innerHTML='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Cadena de la proteína en ocho bloques, coloreada por parental, con los cruces marcados">'+s+'</svg>';
+}
+
+/* ---------- tabla de propuestas ---------- */
+function drawGen(){
+  var host=document.getElementById("genOut");
+  if(!gens.length){host.innerHTML='<p class="empty">Todavía no has generado nada. Dale al botón y aparecen ocho combinaciones nuevas.</p>'; return;}
+  var cur=scores[idxOf(pick)];
+  var h='<table><thead><tr><th>Propuesta</th><th>Qué tan lejos</th><th>Plausibilidad</th><th>vs. la tuya</th><th>Puesto</th></tr></thead><tbody>';
+  gens.forEach(function(g){
+    var d=g.sc-cur, col=d>=0?"var(--good)":"var(--bad)", sign=d>=0?"+":"\u2212";
+    h+='<tr class="pick" data-id="'+g.id+'"><td>'+mini(g.v)+'</td>'+
+       '<td>'+dist(g.v)+' bloques · '+crosses(g.v)+' cruces</td>'+
+       '<td>'+g.sc.toFixed(3)+'</td><td style="color:'+col+'">'+sign+Math.abs(d).toFixed(3)+'</td>'+
+       '<td>'+rank[g.id].toLocaleString("es")+'</td></tr>';});
+  host.innerHTML=h+'</tbody></table>';
+  Array.prototype.forEach.call(host.querySelectorAll("tr.pick"),function(tr){
+    tr.addEventListener("click",function(){pick=vecOf(+tr.getAttribute("data-id")); gens=[]; render();});});
+}
+
+/* ---------- paisaje ---------- */
+function drawMap(){
+  var host=document.getElementById("map"),W=Math.max(280,host.clientWidth),H=250,
+      mL=38,mR=12,mT=12,mB=36,s="",n;
+  function X(d){return mL+d/NB*(W-mL-mR);}
+  function Y(v){return mT+(1-v)*(H-mT-mB);}
+  var buckets={};
+  for(n=0;n<TOT;n++){var v=vecOf(n),k2=dist(v)+"|"+Math.round(scores[n]*60); buckets[k2]=(buckets[k2]||0)+1;}
+  Object.keys(buckets).forEach(function(k2){
+    var pr=k2.split("|");
+    s+='<circle cx="'+X(+pr[0]).toFixed(1)+'" cy="'+Y((+pr[1])/60).toFixed(1)+'" r="'+Math.min(5.5,1.4+Math.log(buckets[k2])).toFixed(1)+'" fill="var(--ink-3)" fill-opacity=".2"/>';});
+  gens.forEach(function(g){
+    s+='<circle cx="'+X(dist(g.v)).toFixed(1)+'" cy="'+Y(g.sc).toFixed(1)+'" r="5" fill="var(--gen)" fill-opacity=".9"/>';});
+  s+='<circle cx="'+X(dist(pick)).toFixed(1)+'" cy="'+Y(scores[idxOf(pick)]).toFixed(1)+'" r="6.5" fill="none" stroke="var(--ink)" stroke-width="2.4"/>';
+  s+='<line x1="'+mL+'" x2="'+(W-mR)+'" y1="'+(H-mB)+'" y2="'+(H-mB)+'" stroke="var(--ink-3)"/>';
+  s+='<line x1="'+mL+'" x2="'+mL+'" y1="'+mT+'" y2="'+(H-mB)+'" stroke="var(--ink-3)"/>';
+  for(var d2=0;d2<=NB;d2++) s+='<text x="'+X(d2).toFixed(1)+'" y="'+(H-mB+15)+'" text-anchor="middle" style="font-size:10px">'+d2+'</text>';
+  s+='<text x="'+((mL+W-mR)/2).toFixed(1)+'" y="'+(H-5)+'" text-anchor="middle" style="font-size:10.5px">bloques que no vienen del parental dominante</text>';
+  s+='<text transform="translate(12,'+((mT+H-mB)/2).toFixed(1)+') rotate(-90)" text-anchor="middle" style="font-size:10.5px">plausibilidad</text>';
+  host.innerHTML='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Paisaje de las 6561 quimeras: distancia al parental dominante contra plausibilidad, con la actual y las generadas marcadas">'+s+'</svg>';
+}
+
+/* ---------- selector ---------- */
+function buildPicker(){
+  var host=document.getElementById("picker"),i,h="";
+  for(i=0;i<NB;i++) h+='<div class="bk"><span class="bl">bloque '+(i+1)+'</span><button type="button" data-b="'+i+'" data-on="'+(pick[i]+1)+'">A'+(pick[i]+1)+'</button></div>';
+  host.innerHTML=h;
+  Array.prototype.forEach.call(host.querySelectorAll("button"),function(b){
+    b.addEventListener("click",function(){var k=+b.getAttribute("data-b"); pick[k]=(pick[k]+1)%NP; gens=[]; render();});});
+}
+function render(){
+  Array.prototype.forEach.call(document.querySelectorAll("#picker button"),function(b){
+    var k=+b.getAttribute("data-b"); b.setAttribute("data-on",pick[k]+1); b.textContent="A"+(pick[k]+1);});
+  drawChain(); drawGen(); drawMap();
+  var id=idxOf(pick);
+  document.getElementById("rScore").textContent=scores[id].toFixed(3);
+  document.getElementById("rRank").innerHTML=rank[id].toLocaleString("es")+' <small>de 6 561</small>';
+  document.getElementById("rCross").innerHTML=crosses(pick)+' <small>'+dist(pick)+' bloques ajenos</small>';
+}
+
+document.getElementById("temp").addEventListener("input",function(e){
+  temp=+e.target.value; document.getElementById("tOut").textContent="T = "+temp.toFixed(2);});
+document.getElementById("gen").addEventListener("click",function(){gens=generate(8); drawGen(); drawMap();});
+document.getElementById("rnd").addEventListener("click",function(){
+  for(var i=0;i<NB;i++) pick[i]=Math.floor(Math.random()*NP); gens=[]; render();});
+document.getElementById("best").addEventListener("click",function(){pick=vecOf(order[0]); gens=[]; render();});
+document.getElementById("reset").addEventListener("click",function(){pick=[0,0,0,0,0,0,0,0]; gens=[]; render();});
+var lw=0;
+function onR(){var w=document.getElementById("chain").clientWidth; if(w!==lw){lw=w; drawChain(); drawMap();}}
+if(window.ResizeObserver) new ResizeObserver(onR).observe(document.getElementById("chain"));
+else window.addEventListener("resize",onR);
+
+document.getElementById("tOut").textContent="T = 1.00";
+buildPicker(); computeAll(); render();
+
+})();
+</script>
+</body></html>
